@@ -37,7 +37,7 @@ public class NatsDistributedCache : IDistributedCache
     public byte[]? Get(string key)
     {
         var result = GetAsync(key);
-        Task.WaitAll(result);
+        result.Wait();
         return result.Result;
     }
 
@@ -69,7 +69,7 @@ public class NatsDistributedCache : IDistributedCache
     public void Remove(string key)
     {
         var result = RemoveAsync(key);
-        Task.WaitAll(result);
+        result.Wait();
     }
 
     /// <inheritdoc/>
@@ -82,7 +82,7 @@ public class NatsDistributedCache : IDistributedCache
     public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
     {
         var result = SetAsync(key, value, options);
-        Task.WaitAll(result);
+        result.Wait();
     }
 
     /// <inheritdoc/>
@@ -109,7 +109,7 @@ public class NatsDistributedCache : IDistributedCache
         }
         else
         {
-            return options.AbsoluteExpiration.HasValue ? options.AbsoluteExpiration.Value - DateTimeOffset.UtcNow : null;
+            return options.AbsoluteExpiration.HasValue ? (options.AbsoluteExpiration.Value - DateTimeOffset.UtcNow) : null;
         }
     }
 

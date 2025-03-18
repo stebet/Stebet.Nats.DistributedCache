@@ -1,23 +1,16 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
-	  <OutputType>exe</OutputType>
+    <OutputType>exe</OutputType>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" Version="0.14.0" />
-    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="9.0.2" />
+    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" />
   </ItemGroup>
-
   <ItemGroup>
     <ProjectReference Include="..\Stebet.Nats.DistributedCache\Stebet.Nats.DistributedCache.csproj" />
   </ItemGroup>
-
-	<ItemGroup>
-		<Using Include="BenchmarkDotNet.Attributes" />
-	</ItemGroup>
+  <ItemGroup>
+    <Using Include="BenchmarkDotNet.Attributes" />
+  </ItemGroup>
 </Project>

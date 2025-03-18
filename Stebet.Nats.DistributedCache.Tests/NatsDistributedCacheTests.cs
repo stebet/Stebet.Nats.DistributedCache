@@ -24,11 +24,11 @@ public class NatsDistributedCacheTests
         var guid = Guid.NewGuid();
         var guidBytes = guid.ToByteArray();
         var key = guid.ToString();
-        await _cache.SetAsync(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(2) }).ConfigureAwait(false);
-        var result = await _cache.GetAsync(key).ConfigureAwait(false);
+        await _cache.SetAsync(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(2) });
+        var result = await _cache.GetAsync(key);
         Assert.Equal(guidBytes, result);
-        await Task.Delay(3000).ConfigureAwait(false);
-        result = await _cache.GetAsync(key).ConfigureAwait(false);
+        await Task.Delay(3000);
+        result = await _cache.GetAsync(key);
         Assert.Null(result);
     }
 
@@ -38,11 +38,11 @@ public class NatsDistributedCacheTests
         var guid = Guid.NewGuid();
         var guidBytes = guid.ToByteArray();
         var key = guid.ToString();
-        await _cache.SetAsync(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2) }).ConfigureAwait(false);
-        var result = await _cache.GetAsync(key).ConfigureAwait(false);
+        await _cache.SetAsync(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2) });
+        var result = await _cache.GetAsync(key);
         Assert.Equal(guidBytes, result);
-        await Task.Delay(3000).ConfigureAwait(false);
-        result = await _cache.GetAsync(key).ConfigureAwait(false);
+        await Task.Delay(3000);
+        result = await _cache.GetAsync(key);
         Assert.Null(result);
     }
 }
