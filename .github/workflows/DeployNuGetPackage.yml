@@ -2,7 +2,11 @@ name: Deploy Package to NuGet
 
 on:
   workflow_dispatch:
-    branches: [ master ]
+    inputs:
+      build_preview:
+        description: 'Preview Build?'
+        required: true
+        type: boolean
 
 jobs:
   build:
@@ -31,6 +35,10 @@ jobs:
       env:
         VERPREF: ${{ format('{0}.{1}.{2}{3}', env.MajorVersion, env.MinorVersion, steps.date.outputs.date, github.run_number) }}
       run: echo "VersionPrefix=$(echo ${VERPREF})" >> $GITHUB_ENV
+
+    - name: Set Version Suffix
+      if: ${{ inputs.build_preview }} 
+      run: echo "VersionSuffix=Preview" >> $GITHUB_ENV
     
     - name: Setup .NET 8.0 SDK
       uses: actions/setup-dotnet@v1
