@@ -2,7 +2,7 @@ name: Deploy Package to NuGet
 
 on:
   workflow_dispatch:
-    branches: [ main ]
+    branches: [ master ]
 
 jobs:
   build:
