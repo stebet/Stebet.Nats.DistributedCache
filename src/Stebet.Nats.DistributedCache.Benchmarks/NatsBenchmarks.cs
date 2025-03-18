@@ -35,21 +35,21 @@ public class NatsBenchmarks
 
     [Benchmark]
     [ArgumentsSource(nameof(Caches))]
-    public async Task TestPutWithStaticKey(IDistributedCache cache)
+    public async Task TestPutWithStaticKeyAsync(IDistributedCache cache)
     {
-        await cache.SetAsync(nameof(TestPutWithStaticKey), _data, _distributedCacheEntryOptions).ConfigureAwait(false);
+        await cache.SetAsync(nameof(TestPutWithStaticKeyAsync), _data, _distributedCacheEntryOptions).ConfigureAwait(false);
     }
 
     [Benchmark]
     [ArgumentsSource(nameof(Caches))]
-    public async Task TestPutWithRandomKey(IDistributedCache cache)
+    public async Task TestPutWithRandomKeyAsync(IDistributedCache cache)
     {
         await cache.SetAsync(Guid.NewGuid().ToString(), _data, _distributedCacheEntryOptions).ConfigureAwait(false);
     }
 
     [Benchmark]
     [ArgumentsSource(nameof(Caches))]
-    public async Task<byte[]?> TestGet(IDistributedCache cache)
+    public async Task<byte[]?> TestGetAsync(IDistributedCache cache)
     {
         return await cache.GetAsync("AlreadySet").ConfigureAwait(false);
     }

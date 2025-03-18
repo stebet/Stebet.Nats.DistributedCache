@@ -19,7 +19,7 @@ public class NatsDistributedCacheTests
     }
 
     [Fact]
-    public async Task TestAbsoluteExpiration()
+    public async Task TestAbsoluteExpirationAsync()
     {
         var guid = Guid.NewGuid();
         var guidBytes = guid.ToByteArray();
@@ -33,7 +33,7 @@ public class NatsDistributedCacheTests
     }
 
     [Fact]
-    public async Task TestAbsoluteExpirationRelativeToNow()
+    public async Task TestAbsoluteExpirationRelativeToNowAsync()
     {
         var guid = Guid.NewGuid();
         var guidBytes = guid.ToByteArray();

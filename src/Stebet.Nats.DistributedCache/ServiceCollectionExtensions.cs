@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 
 using Stebet.Nats.DistributedCache;
 
+#pragma warning disable IDE0130 // Namespace does not match folder structure
 namespace Microsoft.Extensions.DependencyInjection;
+#pragma warning restore IDE0130 // Namespace does not match folder structure
 
 /// <summary>
 /// Extensions for adding NATS distributed cache to IServiceCollection.
@@ -18,7 +20,10 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddNatsDistributedCache(this IServiceCollection services, Action<NatsDistributedCacheOptions> setupAction)
     {
-        ArgumentNullException.ThrowIfNull(services);
+        if (services == null)
+        {
+            throw new ArgumentNullException(nameof(services));
+        }
 
         // Add NATS distributed cache options
         services.Configure(setupAction);

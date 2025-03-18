@@ -1,4 +1,4 @@
-﻿using System.Runtime.CompilerServices;
+using System.Runtime.CompilerServices;
 
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Options;
@@ -88,7 +88,11 @@ public class NatsDistributedCache : IDistributedCache
     /// <inheritdoc/>
     public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
     {
-        ArgumentNullException.ThrowIfNull(options, nameof(options));
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+
         var ttl = ValidateCacheOptionsAndDetermineTtl(options);
 
         return ttl.HasValue
