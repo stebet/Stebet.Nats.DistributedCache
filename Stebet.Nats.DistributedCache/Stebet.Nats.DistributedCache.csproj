@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 	<PropertyGroup>
-		<PackageLicenseFile>../License.txt</PackageLicenseFile>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
 		<PackageProjectUrl>https://github.com/stebet/Stebet.Nats.DistributedCache</PackageProjectUrl>
 		<PackageOutputPath>./nupkg</PackageOutputPath>
 	</PropertyGroup>
