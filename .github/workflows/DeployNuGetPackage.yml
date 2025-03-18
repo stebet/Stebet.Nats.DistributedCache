@@ -38,7 +38,7 @@ jobs:
         dotnet-version: 8.x
 
     - name: Build Project
-      run: dotnet pack ./Stebet.Nats.DistributedCache/Stebet.Nats.DistributedCache.csproj --configuration Release
+      run: dotnet pack ./src/Stebet.Nats.DistributedCache/Stebet.Nats.DistributedCache.csproj --configuration Release
 
     - name: Publish Nuget to GitHub registry
-      run: dotnet nuget push ./Stebet.Nats.DistributedCache/nupkg/*.nupkg -k ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols 
+      run: dotnet nuget push ./src/Stebet.Nats.DistributedCache/nupkg/*.nupkg -k ${{ secrets.NUGET_TOKEN }} --source https://api.nuget.org/v3/index.json --skip-duplicate --no-symbols 

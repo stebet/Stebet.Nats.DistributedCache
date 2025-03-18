@@ -15,7 +15,7 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Stebet.Nats.DistributedCache\Stebet.Nats.DistributedCache.csproj" />
+    <ProjectReference Include="..\..\src\Stebet.Nats.DistributedCache\Stebet.Nats.DistributedCache.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Using Include="Xunit" />
