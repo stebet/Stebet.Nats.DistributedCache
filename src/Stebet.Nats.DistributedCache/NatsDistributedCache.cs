@@ -15,7 +15,7 @@ namespace Stebet.Nats.DistributedCache;
 public class NatsDistributedCache : IDistributedCache
 {
     private readonly INatsKVContext _kvContext;
-    private readonly INatsKVStore _natsKvStore;
+    private INatsKVStore _natsKvStore;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="NatsDistributedCache"/> class.
@@ -25,12 +25,19 @@ public class NatsDistributedCache : IDistributedCache
     public NatsDistributedCache(IOptions<NatsDistributedCacheOptions> options, INatsConnection connection)
     {
         _kvContext = connection.CreateJetStreamContext().CreateKeyValueStoreContext();
-        var createOrUpdateTask = _kvContext.CreateOrUpdateStoreAsync(new NatsKVConfig(options.Value.BucketName)
+        var createOrUpdateTask = Task.Run(async () =>
         {
-            AllowMsgTTL = true
-        }).AsTask();
+            _natsKvStore = await _kvContext.CreateOrUpdateStoreAsync(new NatsKVConfig(options.Value.BucketName)
+            {
+                AllowMsgTTL = true
+            }).ConfigureAwait(false);
+        });
+
         createOrUpdateTask.Wait();
-        _natsKvStore = createOrUpdateTask.Result;
+        if (_natsKvStore == null)
+        {
+            throw new InvalidOperationException("Failed to create or update the NATS KeyValue Store.");
+        }
     }
 
     /// <inheritdoc/>
@@ -88,10 +95,14 @@ public class NatsDistributedCache : IDistributedCache
     /// <inheritdoc/>
     public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
     {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(options);
+#else
         if (options == null)
         {
             throw new ArgumentNullException(nameof(options));
         }
+#endif
 
         var ttl = ValidateCacheOptionsAndDetermineTtl(options);
 

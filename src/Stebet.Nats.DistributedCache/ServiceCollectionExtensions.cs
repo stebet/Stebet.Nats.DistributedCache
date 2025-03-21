@@ -20,10 +20,14 @@ public static class ServiceCollectionExtensions
     /// <returns>The <see cref="IServiceCollection"/> so that additional calls can be chained.</returns>
     public static IServiceCollection AddNatsDistributedCache(this IServiceCollection services, Action<NatsDistributedCacheOptions> setupAction)
     {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(services);
+#else
         if (services == null)
         {
             throw new ArgumentNullException(nameof(services));
         }
+#endif
 
         // Add NATS distributed cache options
         services.Configure(setupAction);
