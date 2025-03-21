@@ -25,6 +25,10 @@ public class ServiceCollectionExtensionsTests
         Assert.NotNull(cache);
         Assert.IsType<NatsDistributedCache>(cache);
 
+        var bufferCache = serviceProvider.GetService<IBufferDistributedCache>();
+        Assert.NotNull(bufferCache);
+        Assert.IsType<NatsDistributedCache>(bufferCache);
+
         var options = serviceProvider.GetService<IOptions<NatsDistributedCacheOptions>>();
         Assert.NotNull(options);
         Assert.Equal("TestBucket", options.Value.BucketName);
@@ -71,6 +75,11 @@ public class ServiceCollectionExtensionsTests
         Assert.NotNull(descriptor);
         Assert.Equal(ServiceLifetime.Singleton, descriptor.Lifetime);
         Assert.Equal(typeof(NatsDistributedCache), descriptor.ImplementationType);
+
+        descriptor = services.FirstOrDefault(d => d.ServiceType == typeof(IBufferDistributedCache));
+        Assert.NotNull(descriptor);
+        Assert.Equal(ServiceLifetime.Singleton, descriptor.Lifetime);
+        Assert.Equal(typeof(NatsDistributedCache), descriptor.ImplementationType);
     }
 
     [Fact]
@@ -86,6 +95,8 @@ public class ServiceCollectionExtensionsTests
 
         // Assert
         var registrations = services.Count(d => d.ServiceType == typeof(IDistributedCache));
+        Assert.Equal(1, registrations);
+        registrations = services.Count(d => d.ServiceType == typeof(IBufferDistributedCache));
         Assert.Equal(1, registrations);
 
         using var serviceProvider = services.BuildServiceProvider();

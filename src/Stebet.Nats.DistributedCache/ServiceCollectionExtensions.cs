@@ -34,6 +34,7 @@ public static class ServiceCollectionExtensions
 
         // Register the distributed cache implementations
         services.TryAddSingleton<IDistributedCache, NatsDistributedCache>();
+        services.TryAddSingleton<IBufferDistributedCache, NatsDistributedCache>();
 
         return services;
     }

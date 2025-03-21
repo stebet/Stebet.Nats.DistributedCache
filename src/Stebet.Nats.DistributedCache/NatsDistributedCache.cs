@@ -11,9 +11,9 @@ using NATS.Net;
 namespace Stebet.Nats.DistributedCache;
 
 /// <summary>
-/// Implementation of <see cref="IDistributedCache"/> that uses NATS KeyValue Store to store the cache. Requires NATS Server Version 2.11 or higher.
+/// Implementation of <see cref="IBufferDistributedCache"/> that uses NATS KeyValue Store to store the cache. Requires NATS Server Version 2.11 or higher.
 /// </summary>
-public class NatsDistributedCache : IDistributedCache, IBufferDistributedCache
+public class NatsDistributedCache : IBufferDistributedCache
 {
     private readonly INatsKVContext _kvContext;
     private INatsKVStore _natsKvStore;
