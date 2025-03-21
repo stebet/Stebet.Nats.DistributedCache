@@ -101,4 +101,14 @@ public class NatsDistributedCacheTests
         result = await _cache.GetAsync(key);
         Assert.Null(result);
     }
+
+    [Fact]
+    public async Task SlidingExpirationNotSupported()
+    {
+        var guid = Guid.NewGuid();
+        var guidBytes = guid.ToByteArray();
+        var key = guid.ToString();
+        var exception = await Assert.ThrowsAsync<NotSupportedException>(async () => await _cache.SetAsync(key, guidBytes, new DistributedCacheEntryOptions() { SlidingExpiration = TimeSpan.FromSeconds(2) }).ConfigureAwait(false));
+        Assert.Equal("Sliding expiration is not supported by this cache implementation yet...", exception.Message);
+    }
 }
