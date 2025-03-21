@@ -1,3 +1,4 @@
+using System.Buffers;
 using System.Runtime.CompilerServices;
 
 using Microsoft.Extensions.Caching.Distributed;
@@ -12,7 +13,7 @@ namespace Stebet.Nats.DistributedCache;
 /// <summary>
 /// Implementation of <see cref="IDistributedCache"/> that uses NATS KeyValue Store to store the cache. Requires NATS Server Version 2.11 or higher.
 /// </summary>
-public class NatsDistributedCache : IDistributedCache
+public class NatsDistributedCache : IDistributedCache, IBufferDistributedCache
 {
     private readonly INatsKVContext _kvContext;
     private INatsKVStore _natsKvStore;
@@ -90,6 +91,48 @@ public class NatsDistributedCache : IDistributedCache
         return ttl.HasValue
             ? _natsKvStore.PutAsync(key, value, ttl.Value, cancellationToken: token).AsTask()
             : _natsKvStore.PutAsync(key, value, cancellationToken: token).AsTask();
+    }
+
+    public bool TryGet(string key, IBufferWriter<byte> destination) => TryGetAsync(key, destination).AsTask().GetAwaiter().GetResult();
+
+    /// <inheritdoc/>
+    public async ValueTask<bool> TryGetAsync(string key, IBufferWriter<byte> destination, CancellationToken token = default)
+    {
+        var result = await _natsKvStore.TryGetEntryAsync<NatsMemoryOwner<byte>>(key, cancellationToken: token).ConfigureAwait(false);
+        if (result.Success)
+        {
+            using var memoryOwner = result.Value.Value;
+            destination.Write(memoryOwner.Memory.Span);
+            return true;
+        }
+
+        return false;
+    }
+
+    public void Set(string key, ReadOnlySequence<byte> value, DistributedCacheEntryOptions options) => SetAsync(key, value, options).AsTask().GetAwaiter().GetResult();
+
+    public async ValueTask SetAsync(string key, ReadOnlySequence<byte> value, DistributedCacheEntryOptions options, CancellationToken token = default)
+    {
+#if NET8_0_OR_GREATER
+        ArgumentNullException.ThrowIfNull(options);
+#else
+        if (options == null)
+        {
+            throw new ArgumentNullException(nameof(options));
+        }
+#endif
+
+        var memoryOwner = NatsMemoryOwner<byte>.Allocate((int)value.Length);
+        value.CopyTo(memoryOwner.Memory.Span);
+        var ttl = ValidateCacheOptionsAndDetermineTtl(options);
+        if (ttl.HasValue)
+        {
+            await _natsKvStore.PutAsync(key, memoryOwner, ttl.Value, cancellationToken: token).ConfigureAwait(false);
+        }
+        else
+        {
+            await _natsKvStore.PutAsync(key, memoryOwner, cancellationToken: token).ConfigureAwait(false);
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]

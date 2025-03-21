@@ -1,3 +1,5 @@
+using System.Buffers;
+
 using Microsoft.Extensions.Caching.Distributed;
 
 using NATS.Client.Core;
@@ -47,6 +49,38 @@ public class NatsDistributedCacheTests
     }
 
     [Fact]
+    public async Task TestAbsoluteExpirationBufferedAsync()
+    {
+        var guid = Guid.NewGuid();
+        var guidBytes = new ReadOnlySequence<byte>(guid.ToByteArray());
+        ArrayBufferWriter<byte> buffer = new();
+        var key = guid.ToString();
+        await _cache.SetAsync(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(2) });
+        var result = await _cache.TryGetAsync(key, buffer);
+        Assert.True(result);
+        Assert.Equal(guidBytes.ToArray(), buffer.WrittenSpan.ToArray());
+        await Task.Delay(3000);
+        result = await _cache.TryGetAsync(key, buffer);
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task TestAbsoluteExpirationBuffered()
+    {
+        var guid = Guid.NewGuid();
+        var guidBytes = new ReadOnlySequence<byte>(guid.ToByteArray());
+        ArrayBufferWriter<byte> buffer = new();
+        var key = guid.ToString();
+        _cache.Set(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpiration = DateTimeOffset.UtcNow.AddSeconds(2) });
+        var result = _cache.TryGet(key, buffer);
+        Assert.True(result);
+        Assert.Equal(guidBytes.ToArray(), buffer.WrittenSpan.ToArray());
+        await Task.Delay(3000);
+        result = _cache.TryGet(key, buffer);
+        Assert.False(result);
+    }
+
+    [Fact]
     public async Task TestAbsoluteExpirationRelativeToNow()
     {
         var guid = Guid.NewGuid();
@@ -72,6 +106,38 @@ public class NatsDistributedCacheTests
         await Task.Delay(3000);
         result = await _cache.GetAsync(key);
         Assert.Null(result);
+    }
+
+    [Fact]
+    public async Task TestAbsoluteExpirationRelativeToNowBuffered()
+    {
+        var guid = Guid.NewGuid();
+        var guidBytes = new ReadOnlySequence<byte>(guid.ToByteArray());
+        ArrayBufferWriter<byte> buffer = new();
+        var key = guid.ToString();
+        _cache.Set(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2) });
+        var result = _cache.TryGet(key, buffer);
+        Assert.True(result);
+        Assert.Equal(guidBytes.ToArray(), buffer.WrittenSpan.ToArray());
+        await Task.Delay(3000);
+        result = _cache.TryGet(key, buffer);
+        Assert.False(result);
+    }
+
+    [Fact]
+    public async Task TestAbsoluteExpirationRelativeToNowBufferedAsync()
+    {
+        var guid = Guid.NewGuid();
+        var guidBytes = new ReadOnlySequence<byte>(guid.ToByteArray());
+        ArrayBufferWriter<byte> buffer = new();
+        var key = guid.ToString();
+        await _cache.SetAsync(key, guidBytes, new DistributedCacheEntryOptions() { AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2) });
+        var result = await _cache.TryGetAsync(key, buffer);
+        Assert.True(result);
+        Assert.Equal(guidBytes.ToArray(), buffer.WrittenSpan.ToArray());
+        await Task.Delay(3000);
+        result = await _cache.TryGetAsync(key, buffer);
+        Assert.False(result);
     }
 
     [Fact]
