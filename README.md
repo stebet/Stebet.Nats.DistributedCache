@@ -1,5 +1,6 @@
 # Stebet.Nats.DistributedCache
 
+[![codecov](https://codecov.io/gh/stebet/Stebet.Nats.DistributedCache/graph/badge.svg?token=rjCaeMRBsa)](https://codecov.io/gh/stebet/Stebet.Nats.DistributedCache)
 [![NuGet](https://img.shields.io/nuget/v/Stebet.Nats.DistributedCache.svg)](https://www.nuget.org/packages/Stebet.Nats.DistributedCache)
 [![License](https://img.shields.io/github/license/stebet/Stebet.Nats.DistributedCache)](https://github.com/stebet/Stebet.Nats.DistributedCache/blob/master/LICENSE.txt)
 
