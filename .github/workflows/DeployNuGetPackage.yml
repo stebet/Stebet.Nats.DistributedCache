@@ -40,10 +40,15 @@ jobs:
       if: ${{ inputs.build_preview }} 
       run: echo "VersionSuffix=Preview" >> $GITHUB_ENV
     
-    - name: Setup .NET 8.0 SDK
-      uses: actions/setup-dotnet@v1
+    - name: Setup .NET 8
+      uses: actions/setup-dotnet@v3
       with:
         dotnet-version: 8.x
+    
+    - name: Setup .NET 9
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 9.x
 
     - name: Build Project
       run: dotnet pack ./src/Stebet.Nats.DistributedCache/Stebet.Nats.DistributedCache.csproj --configuration Release
