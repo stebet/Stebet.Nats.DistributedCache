@@ -41,12 +41,7 @@ public class NatsDistributedCache : IDistributedCache
     }
 
     /// <inheritdoc/>
-    public byte[]? Get(string key)
-    {
-        var result = GetAsync(key);
-        result.Wait();
-        return result.Result;
-    }
+    public byte[]? Get(string key) => GetAsync(key).GetAwaiter().GetResult();
 
     /// <inheritdoc/>
     public async Task<byte[]?> GetAsync(string key, CancellationToken token = default)
@@ -67,30 +62,16 @@ public class NatsDistributedCache : IDistributedCache
     }
 
     /// <inheritdoc/>
-    public Task RefreshAsync(string key, CancellationToken token = default)
-    {
-        return Task.CompletedTask;
-    }
+    public Task RefreshAsync(string key, CancellationToken token = default) => Task.CompletedTask;
 
     /// <inheritdoc/>
-    public void Remove(string key)
-    {
-        var result = RemoveAsync(key);
-        result.Wait();
-    }
+    public void Remove(string key) => RemoveAsync(key).Wait();
 
     /// <inheritdoc/>
-    public async Task RemoveAsync(string key, CancellationToken token = default)
-    {
-        await _natsKvStore.DeleteAsync(key, cancellationToken: token).ConfigureAwait(false);
-    }
+    public async Task RemoveAsync(string key, CancellationToken token = default) => await _natsKvStore.DeleteAsync(key, cancellationToken: token).ConfigureAwait(false);
 
     /// <inheritdoc/>
-    public void Set(string key, byte[] value, DistributedCacheEntryOptions options)
-    {
-        var result = SetAsync(key, value, options);
-        result.Wait();
-    }
+    public void Set(string key, byte[] value, DistributedCacheEntryOptions options) => SetAsync(key, value, options).Wait();
 
     /// <inheritdoc/>
     public Task SetAsync(string key, byte[] value, DistributedCacheEntryOptions options, CancellationToken token = default)
