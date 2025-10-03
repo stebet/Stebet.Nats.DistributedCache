@@ -1,4 +1,6 @@
 name: Deploy Package to NuGet
+permissions:
+  contents: read
 
 on:
   workflow_dispatch:
