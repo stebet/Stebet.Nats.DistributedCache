@@ -25,13 +25,12 @@ public class NatsDistributedCache : IBufferDistributedCache
     /// <param name="connection">The NATS connection to use.</param>
     public NatsDistributedCache(IOptions<NatsDistributedCacheOptions> options, INatsConnection connection)
     {
-        _kvContext = connection.CreateJetStreamContext().CreateKeyValueStoreContext();
+        var _streamContext = connection.CreateJetStreamContext();
+        _kvContext = _streamContext.CreateKeyValueStoreContext();
         var createOrUpdateTask = Task.Run(async () =>
         {
-            _natsKvStore = await _kvContext.CreateOrUpdateStoreAsync(new NatsKVConfig(options.Value.BucketName)
-            {
-                AllowMsgTTL = true
-            }).ConfigureAwait(false);
+            _natsKvStore = await _kvContext.CreateOrUpdateStoreAsync(new NatsKVConfig(options.Value.BucketName) {  LimitMarkerTTL = TimeSpan.FromMinutes(10)}).ConfigureAwait(false);
+            //await _natsKvStore.JetStreamContext.UpdateStreamAsync(new NATS.Client.JetStream.Models.StreamConfig(_natsKvStore.) { AllowMsgTTL = true }).ConfigureAwait(false);
         });
 
         createOrUpdateTask.Wait();
@@ -89,8 +88,8 @@ public class NatsDistributedCache : IBufferDistributedCache
         var ttl = ValidateCacheOptionsAndDetermineTtl(options);
 
         return ttl.HasValue
-            ? _natsKvStore.PutAsync(key, value, ttl.Value, cancellationToken: token).AsTask()
-            : _natsKvStore.PutAsync(key, value, cancellationToken: token).AsTask();
+            ? _natsKvStore.CreateAsync(key, value, ttl.Value, cancellationToken: token).AsTask()
+            : _natsKvStore.CreateAsync(key, value, cancellationToken: token).AsTask();
     }
 
     public bool TryGet(string key, IBufferWriter<byte> destination) => TryGetAsync(key, destination).AsTask().GetAwaiter().GetResult();
@@ -127,11 +126,11 @@ public class NatsDistributedCache : IBufferDistributedCache
         var ttl = ValidateCacheOptionsAndDetermineTtl(options);
         if (ttl.HasValue)
         {
-            await _natsKvStore.PutAsync(key, memoryOwner, ttl.Value, cancellationToken: token).ConfigureAwait(false);
+            await _natsKvStore.CreateAsync(key, memoryOwner, ttl.Value, cancellationToken: token).ConfigureAwait(false);
         }
         else
         {
-            await _natsKvStore.PutAsync(key, memoryOwner, cancellationToken: token).ConfigureAwait(false);
+            await _natsKvStore.CreateAsync(key, memoryOwner, cancellationToken: token).ConfigureAwait(false);
         }
     }
 

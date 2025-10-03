@@ -1,3 +1,3 @@
-FROM nats:2.11-alpine
+FROM nats:2.12-alpine
 ENTRYPOINT ["docker-entrypoint.sh"]
 CMD ["nats-server", "--jetstream"]
