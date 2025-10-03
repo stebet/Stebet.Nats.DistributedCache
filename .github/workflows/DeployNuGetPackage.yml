@@ -19,7 +19,7 @@ jobs:
       MajorVersion: 0
       MinorVersion: 1
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v5
 
     - name: Get current date
       id: version
@@ -42,13 +42,8 @@ jobs:
       if: ${{ inputs.build_preview }} 
       run: echo "VersionSuffix=Preview" >> $GITHUB_ENV
     
-    - name: Setup .NET 8
-      uses: actions/setup-dotnet@v3
-      with:
-        dotnet-version: 8.x
-    
     - name: Setup .NET 9
-      uses: actions/setup-dotnet@v3
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 9.x
 
